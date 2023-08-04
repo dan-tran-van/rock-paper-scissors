@@ -27,7 +27,7 @@ the Rock Paper Scissors game rules
         If false increment the round number and return to step 5
 */
 // Initialize game meta(user's score, computer's score, round number)
-let userScore = 0,
+let playerScore = 0,
   computerScore = 0;
 let roundNumber = 1;
 
@@ -40,7 +40,6 @@ function getComputerChoice() {
     ? "Paper"
     : "Scissors";
 }
-// console.log(getComputerChoice()) ;
 
 function getRandomInt(max) {
   return Math.floor(Math.random() * max);
@@ -59,90 +58,53 @@ function playRound(playerSelection, computerSelection) {
     (playerSelectionNumber === 2 && computerSelectionNumber === 0)
   ) {
     if (playerSelectionNumber > computerSelectionNumber) {
-      alert(
-        `Round ${roundNumber}: Player: ${userScore} Computer: ${computerScore}\nYou lose! ${computerSelection} beats ${playerSelection}`
+      displayResult(
+        `Round ${roundNumber}: You lose! ${computerSelection} beats ${playerSelection}`
       );
       computerScore++;
     } else {
-      alert(
-        `Round ${roundNumber}: Player: ${userScore} Computer: ${computerScore}\nYou win! ${playerSelection} beats ${computerSelection}`
+      displayResult(
+        `Round ${roundNumber}: You win! ${playerSelection} beats ${computerSelection}`
       );
-      userScore++;
+      playerScore++;
     }
   } else if (playerSelectionNumber === computerSelectionNumber) {
-    alert(
-      `Round ${roundNumber}: Player: ${userScore} Computer: ${computerScore}\nDraw!`
-    );
+    displayResult(`Round ${roundNumber}: Draw!`);
   } else {
     if (playerSelectionNumber > computerSelectionNumber) {
-      alert(
-        `Round ${roundNumber}: Player: ${userScore} Computer: ${computerScore}\nYou win! ${playerSelection} beats ${computerSelection}`
+      displayResult(
+        `Round ${roundNumber}: You win! ${playerSelection} beats ${computerSelection}`
       );
-      userScore++;
+      playerScore++;
     } else {
-      alert(
-        `Round ${roundNumber}: Player: ${userScore} Computer: ${computerScore}\nYou lose! ${computerSelection} beats ${playerSelection}`
+      displayResult(
+        `Round ${roundNumber}: You lose! ${computerSelection} beats ${playerSelection}`
       );
       computerScore++;
     }
   }
-}
-// playRound(getUserChoice(), getComputerChoice());
-
-// This function prompt user to choose a move and return the user chosen choice
-function getUserChoice() {
-  let userChoice = prompt(
-    `Round ${roundNumber}: Player: ${userScore} Computer: ${computerScore}\nChoose a move among 'Rock', 'Paper', 'Scissors'`
-  );
-  userChoice = userChoice.toLowerCase();
-  userChoice =
-    userChoice === "rock"
-      ? "Rock"
-      : userChoice === "paper"
-      ? "Paper"
-      : userChoice === "scissors"
-      ? "Scissors"
-      : undefined;
-  if (userChoice === undefined) {
-    alert(
-      `Round ${roundNumber}: Player: ${userScore} Computer: ${computerScore}\nYour chosen move is not valid! Please choose again`
-    );
-    return getUserChoice();
-  }
-  return userChoice;
-}
-
-// console.log(getUserChoice());
-
-function game() {
-  playRound(getUserChoice(), getComputerChoice());
-  roundNumber++;
-  playRound(getUserChoice(), getComputerChoice());
-  roundNumber++;
-  playRound(getUserChoice(), getComputerChoice());
-  checkWinner();
-  playRound(getUserChoice(), getComputerChoice());
-  checkWinner();
-  playRound(getUserChoice(), getComputerChoice());
-  checkWinner();
 }
 
 function checkWinner() {
-  if (userScore === 3 || computerScore === 3) {
-    alert(`The winner is ${userScore === 3 ? "User" : "Computer"}`);
+  if (playerScore === 3 || computerScore === 3) {
+    displayWinner(`The winner is ${playerScore === 3 ? "Player" : "Computer"}`);
     resetGame();
-  } else if (roundNumber === 5 && userScore === computerScore) {
-    alert("Draw!");
+  } else if (roundNumber === 5 && playerScore === computerScore) {
+    displayWinner("Draw!");
     resetGame();
   } else if (roundNumber === 5) {
-    alert(`The winner is ${userScore > computerScore ? "User" : "Computer"}`);
+    displayWinner(
+      `The winner is ${playerScore > computerScore ? "Player" : "Computer"}`
+    );
     resetGame();
   } else if (
     roundNumber === 4 &&
-    ((userScore === 2 && computerScore === 0) ||
-      (computerScore === 2 && userScore === 0))
+    ((playerScore === 2 && computerScore === 0) ||
+      (computerScore === 2 && playerScore === 0))
   ) {
-    alert(`The winner is ${userScore > computerScore ? "Player" : "Computer"}`);
+    displayWinner(
+      `The winner is ${playerScore > computerScore ? "Player" : "Computer"}`
+    );
     resetGame();
   } else {
     roundNumber++;
@@ -150,10 +112,57 @@ function checkWinner() {
 }
 
 function resetGame() {
-  userScore = 0;
+  playerScore = 0;
   computerScore = 0;
   roundNumber = 1;
-  game();
 }
 
-game();
+// Revisiting Rock Paper Scissors
+
+const rockBtn = document.querySelector("#rock");
+const paperBtn = document.querySelector("#paper");
+const scissorsBtn = document.querySelector("#scissors");
+const clearBtn = document.querySelector("#clearBtn");
+
+clearBtn.addEventListener("click", () => {
+  resultContainer.textContent = "";
+  resetGame();
+  gameStatus();
+});
+
+rockBtn.addEventListener("click", () => {
+  playRound("rock", getComputerChoice());
+  checkWinner();
+  gameStatus();
+});
+paperBtn.addEventListener("click", () => {
+  playRound("paper", getComputerChoice());
+  checkWinner();
+  gameStatus();
+});
+scissorsBtn.addEventListener("click", () => {
+  playRound("scissors", getComputerChoice());
+  checkWinner();
+  gameStatus();
+});
+const resultContainer = document.querySelector(".ResultContainer");
+
+function displayResult(resultArgument) {
+  resultContainer.textContent = resultArgument;
+}
+
+function displayWinner(winnerAnnouncement) {
+  const announcement = document.createElement("p");
+  announcement.textContent = winnerAnnouncement;
+  resultContainer.appendChild(announcement);
+}
+
+const currentRound = document.querySelector("#currentRound");
+const currentPlayerScore = document.querySelector("#currentPlayerScore");
+const currentComputerScore = document.querySelector("#currentComputerScore");
+
+function gameStatus() {
+  currentRound.textContent = `Round ${roundNumber}`;
+  currentPlayerScore.textContent = `Player score: ${playerScore}`;
+  currentComputerScore.textContent = `Computer score: ${computerScore}`;
+}
